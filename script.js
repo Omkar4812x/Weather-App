@@ -1,7 +1,7 @@
 // API Configuration
-const API_KEY = '6cd52c6dc55eb85d0282737d3691f04e'; // Replace with your OpenWeatherMap API key
-const WEATHER_API_URL = 'https://api.openweathermap.org/data/2.5';
-const GEO_API_URL = 'https://api.openweathermap.org/geo/1.0';
+const API_KEY = 'Your_api_kay'; // Replace with your OpenWeatherMap API key
+const WEATHER_API_URL = 'Your_Weather_Api_URL';
+const GEO_API_URL = 'Your_Geo_API_URL';
 
 // DOM Elements
 const searchInput = document.getElementById('searchInput');
