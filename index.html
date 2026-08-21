@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="icon" type="image/png" href="https://openweathermap.org/img/wn/02d@2x.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="styles.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-white transition-colors duration-300">
+    <div class="container mx-auto px-4 py-8 relative z-10">
+        <!-- Header Section -->
+        <header class="text-center mb-12">
+            <div class="flex items-center justify-center mb-4">
+                <img src="https://openweathermap.org/img/wn/02d@2x.png" alt="Weather" class="w-16 h-16">
+                <h1 class="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-400">
+                    Weather App
+                </h1>
+            </div>
+            <p class="text-lg text-gray-600 dark:text-gray-300">Get real-time weather updates for any location</p>
+        </header>
+
+        <!-- Search Section -->
+        <div class="search-container max-w-2xl mx-auto mb-8">
+            <div class="relative">
+                <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="searchInput" 
+                       class="w-full pl-12 pr-12 py-4 rounded-full bg-white dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 outline-none shadow-lg transition-all duration-300"
+                       placeholder="Search for a city...">
+                <button id="locationBtn" 
+                        class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-500 hover:text-blue-600 transition-colors">
+                    <i class="fas fa-location-dot text-xl"></i>
+                </button>
+            </div>
+            <div id="suggestions" class="hidden mt-2 rounded-xl bg-white dark:bg-gray-800 shadow-xl overflow-hidden"></div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="hidden max-w-2xl mx-auto mt-4"></div>
+
+        <!-- Weather Content -->
+        <div id="weatherContent" class="hidden max-w-6xl mx-auto">
+            <!-- Current Weather -->
+            <div class="weather-card backdrop-blur-md mb-8">
+                <div class="flex flex-col md:flex-row items-center justify-between p-8">
+                    <div class="text-center md:text-left mb-6 md:mb-0">
+                        <h2 id="cityName" class="text-3xl font-bold mb-2 text-gray-800 dark:text-white"></h2>
+                        <p id="date" class="text-lg text-gray-600 dark:text-gray-300"></p>
+                    </div>
+                    <div class="flex items-center space-x-6">
+                        <img id="weatherIcon" class="weather-icon w-24 h-24 md:w-32 md:h-32" src="" alt="Weather Icon">
+                        <div class="text-center">
+                            <div id="temperature" class="temperature-display text-6xl font-bold mb-2"></div>
+                            <p id="weatherDescription" class="text-xl text-gray-600 dark:text-gray-300 capitalize"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weather Details -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 p-8 bg-gray-50 dark:bg-gray-800 rounded-b-2xl">
+                    <div class="stat-card text-center">
+                        <i class="fas fa-temperature-high text-blue-500 text-2xl mb-2"></i>
+                        <p class="text-gray-600 dark:text-gray-300">Feels Like</p>
+                        <p id="feelsLike" class="text-2xl font-bold text-gray-800 dark:text-white"></p>
+                    </div>
+                    <div class="stat-card text-center">
+                        <i class="fas fa-droplet text-blue-500 text-2xl mb-2"></i>
+                        <p class="text-gray-600 dark:text-gray-300">Humidity</p>
+                        <p id="humidity" class="text-2xl font-bold text-gray-800 dark:text-white"></p>
+                    </div>
+                    <div class="stat-card text-center">
+                        <i class="fas fa-wind text-blue-500 text-2xl mb-2"></i>
+                        <p class="text-gray-600 dark:text-gray-300">Wind Speed</p>
+                        <p id="windSpeed" class="text-2xl font-bold text-gray-800 dark:text-white"></p>
+                    </div>
+                    <div class="stat-card text-center">
+                        <i class="fas fa-gauge-high text-blue-500 text-2xl mb-2"></i>
+                        <p class="text-gray-600 dark:text-gray-300">Pressure</p>
+                        <p id="pressure" class="text-2xl font-bold text-gray-800 dark:text-white"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Air Quality Section -->
+            <div class="weather-card p-8 mb-8">
+                <h3 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+                    <i class="fas fa-lungs text-blue-500 mr-2"></i>Air Quality
+                </h3>
+                <div id="airQuality" class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                    <!-- Air quality data will be inserted here -->
+                </div>
+            </div>
+
+            <!-- 5-Day Forecast -->
+            <div class="weather-card p-8">
+                <h3 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+                    <i class="fas fa-calendar-days text-blue-500 mr-2"></i>5-Day Forecast
+                </h3>
+                <div id="forecast" class="grid grid-cols-2 md:grid-cols-5 gap-6">
+                    <!-- Forecast data will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <button id="themeToggle" 
+            class="fixed bottom-6 right-6 p-4 rounded-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+        <i class="fas fa-moon dark:hidden text-xl"></i>
+        <i class="fas fa-sun hidden dark:block text-xl"></i>
+    </button>
+
+    <!-- Copyright -->
+    <footer class="fixed bottom-0 left-0 w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm py-2 text-center text-sm text-gray-600 dark:text-gray-300">
+        <p>&copy; 2025 Weather App by Omkar Bhandalkar. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
