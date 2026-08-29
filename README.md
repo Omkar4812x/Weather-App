@@ -1,83 +1,66 @@
-# Weather App
+# 🌤️ SkyPulse Pro - Live Weather Dashboard & Studio
 
-A modern, responsive weather application that provides real-time weather information, forecasts, and air quality data.
+**SkyPulse Pro** is an open-source, real-time weather dashboard built with Vanilla JavaScript and CSS3 glassmorphic design. It features a **Dual Weather Data Engine** combining the free **Open-Meteo API** (zero API key required) alongside the **OpenWeatherMap Cloud API**, 24-hour forecast timelines, air quality index breakdowns, interactive °C/°F unit conversion, and dynamic particle canvas background animations.
 
-![Weather App Screenshot](https://openweathermap.org/img/wn/02d@2x.png)
+---
 
-## Features
+## ✨ Features
 
-- 🌡️ Real-time weather information
-- 🗺️ Location-based weather data
-- 🔍 City search with suggestions
-- 📱 Responsive design
-- 🌓 Dark/Light mode
-- ⌨️ Keyboard navigation
-- 📊 Air quality information
-- 📅 5-day weather forecast
+- 🌤️ **Dual Weather Data Engines**:
+  - **Open-Meteo Free API (Default)**: Zero API key required! Works 100% free out of the box with zero configuration.
+  - **OpenWeatherMap Cloud API**: Optional cloud engine integration with custom API key entry saved to local storage.
+- ⏱️ **24-Hour Forecast Timeline**:
+  - Interactive horizontal scroll timeline displaying hourly temperatures, weather condition icons, and precipitation.
+- 📅 **5-Day Extended Forecast**:
+  - Daily temperature ranges (high/low) and weather condition badges.
+- 🌡️ **Interactive Temperature Unit Switcher**:
+  - Instant 1-click toggling between Celsius (**°C**) and Fahrenheit (**°F**) across all metrics.
+- 🫁 **Air Quality & Health Index (AQI)**:
+  - Color-coded AQI status badge (*Good*, *Moderate*, *Unhealthy*) with component pollutant breakdown (PM2.5, PM10, NO2, O3, CO).
+- ⭐ **Favorite Cities Bar**:
+  - Quick-pin your favorite locations for 1-click instant weather loading saved in `localStorage`.
+- 🎨 **Dynamic Weather Canvas Animations**:
+  - Atmospheric particle background canvas (falling rain drops, floating snow particles, ambient sun rays) matching current live weather conditions.
+- 🌓 **Dark / Light Theme**:
+  - Built-in theme toggle with local persistence and system preferences auto-detection.
 
-## Technologies Used
+---
 
-- HTML5
-- CSS3 (with Tailwind CSS)
-- JavaScript
-- OpenWeatherMap API
-- Font Awesome Icons
-- Google Fonts
+## ⌨️ Keyboard Shortcuts
 
-## Keyboard Shortcuts
+| Shortcut | Action |
+| :--- | :--- |
+| `Ctrl / Cmd + L` | Focus search bar |
+| `Ctrl / Cmd + M` | Fetch current location weather (GPS) |
+| `Ctrl / Cmd + U` | Toggle temperature unit (**°C** / **°F**) |
+| `Ctrl / Cmd + /` | Toggle Dark / Light theme |
+| `Enter` | Perform city search |
 
-- `Ctrl/Cmd + L`: Focus search bar
-- `Ctrl/Cmd + M`: Get current location
-- `Ctrl/Cmd + /`: Toggle dark/light theme
-- `↑` and `↓`: Navigate search suggestions
-- `Enter`: Select suggestion or search
-- `Escape`: Close suggestions
+---
 
-## Setup
+## 🛠️ Technology Stack
 
-1. Clone the repository:
+- **Frontend**: HTML5, Vanilla JavaScript (ES6+ async/await), CSS3 (CSS Custom Properties, Glassmorphism).
+- **APIs**: Open-Meteo Weather & Geocoding API (Zero-Key), OpenWeatherMap API, HTML5 Geolocation.
+- **Canvas Engine**: HTML5 2D Canvas particle animation.
+- **Fonts & Icons**: FontAwesome 6, Google Fonts (*Plus Jakarta Sans*, *Inter*).
+
+---
+
+## 🚀 Getting Started
+
 ```bash
-git clone https://github.com/yourusername/weather-app.git
+# Clone repository
+git clone https://github.com/Omkar4812x/Weather-App.git
+
+# Navigate into directory
+cd Weather-App
+
+# Open index.html directly in your browser
 ```
 
-2. Open `index.html` in your browser or use a local server:
-```bash
-# Using Python
-python -m http.server 8000
+---
 
-# Using Node.js
-npx serve
-```
+## 📄 License
 
-3. Get your API key from [OpenWeatherMap](https://openweathermap.org/api)
-
-4. Replace the API key in `script.js`:
-```javascript
-const API_KEY = 'your_api_key_here';
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Author
-
-**Omkar Bhandalkar**
-
-- Website: [Your Website]
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your LinkedIn]
-
-## Acknowledgments
-
-- Weather data provided by [OpenWeatherMap](https://openweathermap.org)
-- Icons by [Font Awesome](https://fontawesome.com)
-- Fonts by [Google Fonts](https://fonts.google.com)
+Maintained as part of the Web Applications collection under the MIT License. Created by **Omkar Bhandalkar**.

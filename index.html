@@ -1,135 +1,275 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather App</title>
-    <link rel="icon" type="image/png" href="https://openweathermap.org/img/wn/02d@2x.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="styles.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
-</head>
-<body class="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-white transition-colors duration-300">
-    <div class="container mx-auto px-4 py-8 relative z-10">
-        <!-- Header Section -->
-        <header class="text-center mb-12">
-            <div class="flex items-center justify-center mb-4">
-                <img src="https://openweathermap.org/img/wn/02d@2x.png" alt="Weather" class="w-16 h-16">
-                <h1 class="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-400">
-                    Weather App
-                </h1>
-            </div>
-            <p class="text-lg text-gray-600 dark:text-gray-300">Get real-time weather updates for any location</p>
-        </header>
+    <title>SkyPulse Pro - Live Weather Dashboard & Forecast</title>
+    <meta name="description" content="Real-time global weather dashboard with 24-hour timeline, 5-day forecast, air quality index, interactive unit conversion, and zero-key fallback.">
+    <meta name="keywords" content="weather app, live weather, weather forecast, air quality index, open-meteo, openopenweathermap, temperature unit conversion">
 
-        <!-- Search Section -->
-        <div class="search-container max-w-2xl mx-auto mb-8">
-            <div class="relative">
-                <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                <input type="text" id="searchInput" 
-                       class="w-full pl-12 pr-12 py-4 rounded-full bg-white dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 outline-none shadow-lg transition-all duration-300"
-                       placeholder="Search for a city...">
-                <button id="locationBtn" 
-                        class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-500 hover:text-blue-600 transition-colors">
-                    <i class="fas fa-location-dot text-xl"></i>
+    <!-- OpenGraph Tags -->
+    <meta property="og:title" content="SkyPulse Pro - Live Weather Dashboard">
+    <meta property="og:description" content="Real-time global weather updates, 24h timeline, air quality index, and interactive forecasts.">
+    <meta property="og:type" content="website">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Animated Weather Background Canvas -->
+    <canvas id="weatherCanvas" class="weather-canvas-bg"></canvas>
+
+    <!-- Header Navbar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="#" class="brand">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-cloud-sun-rain"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">SkyPulse</span>
+                    <span class="brand-sub">Pro Weather Studio</span>
+                </div>
+            </a>
+
+            <!-- Right Controls -->
+            <div class="nav-controls">
+                <button class="unit-toggle-btn" id="unitToggleBtn" title="Toggle °C / °F (Ctrl+U)">
+                    <span id="unitText">°C</span>
+                </button>
+                <button class="nav-btn" id="themeToggleBtn" title="Toggle Theme (Ctrl+/)">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
+                </button>
+                <button class="nav-btn" id="apiKeySettingsBtn" title="API Key Settings">
+                    <i class="fa-solid fa-key"></i>
                 </button>
             </div>
-            <div id="suggestions" class="hidden mt-2 rounded-xl bg-white dark:bg-gray-800 shadow-xl overflow-hidden"></div>
+        </div>
+    </header>
+
+    <!-- Main Application Container -->
+    <main class="app-container">
+        
+        <!-- Search & Quick Navigation Bar -->
+        <section class="search-section">
+            <div class="search-card">
+                <div class="search-input-wrapper">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search city, state, or country... (Ctrl+L)" autocomplete="off">
+                    <button class="location-btn" id="locationBtn" title="Use My Current Location (Ctrl+M)">
+                        <i class="fa-solid fa-location-crosshairs"></i>
+                    </button>
+                </div>
+                <!-- Search Suggestions Autocomplete -->
+                <div id="suggestions" class="suggestions-dropdown hidden"></div>
+            </div>
+
+            <!-- Favorite Cities Bar -->
+            <div class="favorites-bar" id="favoritesBar">
+                <span class="favorites-label"><i class="fa-solid fa-star" style="color: #f59e0b;"></i> Saved:</span>
+                <div class="favorites-list" id="favoritesList">
+                    <!-- Favorite city chips inserted dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading Spinner Skeleton -->
+        <div id="loadingState" class="loading-state hidden">
+            <div class="spinner"></div>
+            <p style="margin-top: 1rem; color: var(--text-muted); font-weight: 600;">Fetching live weather metrics...</p>
         </div>
 
-        <!-- Error Message -->
-        <div id="errorMessage" class="hidden max-w-2xl mx-auto mt-4"></div>
-
-        <!-- Weather Content -->
-        <div id="weatherContent" class="hidden max-w-6xl mx-auto">
-            <!-- Current Weather -->
-            <div class="weather-card backdrop-blur-md mb-8">
-                <div class="flex flex-col md:flex-row items-center justify-between p-8">
-                    <div class="text-center md:text-left mb-6 md:mb-0">
-                        <h2 id="cityName" class="text-3xl font-bold mb-2 text-gray-800 dark:text-white"></h2>
-                        <p id="date" class="text-lg text-gray-600 dark:text-gray-300"></p>
+        <!-- Main Weather Dashboard Content -->
+        <section id="weatherContent" class="weather-dashboard">
+            
+            <!-- Hero Weather Summary Card -->
+            <div class="hero-weather-card">
+                <div class="hero-header">
+                    <div>
+                        <div class="location-heading">
+                            <h1 id="cityName" class="city-name">London</h1>
+                            <button class="favorite-pin-btn" id="favPinBtn" title="Pin to Favorites">
+                                <i class="fa-regular fa-star" id="favStarIcon"></i>
+                            </button>
+                        </div>
+                        <p id="currentDate" class="current-date">Saturday, August 29, 2026</p>
                     </div>
-                    <div class="flex items-center space-x-6">
-                        <img id="weatherIcon" class="weather-icon w-24 h-24 md:w-32 md:h-32" src="" alt="Weather Icon">
-                        <div class="text-center">
-                            <div id="temperature" class="temperature-display text-6xl font-bold mb-2"></div>
-                            <p id="weatherDescription" class="text-xl text-gray-600 dark:text-gray-300 capitalize"></p>
+                    <div class="engine-badge" id="engineBadge">
+                        <i class="fa-solid fa-bolt"></i> <span id="engineBadgeText">Open-Meteo Engine</span>
+                    </div>
+                </div>
+
+                <div class="hero-body">
+                    <div class="temp-box">
+                        <img id="weatherIcon" class="main-weather-icon" src="https://openweathermap.org/img/wn/02d@4x.png" alt="Weather condition">
+                        <div>
+                            <div id="temperature" class="main-temp">24°C</div>
+                            <p id="weatherDescription" class="weather-condition">Partly Cloudy</p>
                         </div>
                     </div>
-                </div>
-
-                <!-- Weather Details -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 p-8 bg-gray-50 dark:bg-gray-800 rounded-b-2xl">
-                    <div class="stat-card text-center">
-                        <i class="fas fa-temperature-high text-blue-500 text-2xl mb-2"></i>
-                        <p class="text-gray-600 dark:text-gray-300">Feels Like</p>
-                        <p id="feelsLike" class="text-2xl font-bold text-gray-800 dark:text-white"></p>
-                    </div>
-                    <div class="stat-card text-center">
-                        <i class="fas fa-droplet text-blue-500 text-2xl mb-2"></i>
-                        <p class="text-gray-600 dark:text-gray-300">Humidity</p>
-                        <p id="humidity" class="text-2xl font-bold text-gray-800 dark:text-white"></p>
-                    </div>
-                    <div class="stat-card text-center">
-                        <i class="fas fa-wind text-blue-500 text-2xl mb-2"></i>
-                        <p class="text-gray-600 dark:text-gray-300">Wind Speed</p>
-                        <p id="windSpeed" class="text-2xl font-bold text-gray-800 dark:text-white"></p>
-                    </div>
-                    <div class="stat-card text-center">
-                        <i class="fas fa-gauge-high text-blue-500 text-2xl mb-2"></i>
-                        <p class="text-gray-600 dark:text-gray-300">Pressure</p>
-                        <p id="pressure" class="text-2xl font-bold text-gray-800 dark:text-white"></p>
+                    
+                    <div class="high-low-box">
+                        <div class="temp-badge">
+                            <i class="fa-solid fa-temperature-arrow-up" style="color: #ef4444;"></i> High: <span id="tempHigh">26°C</span>
+                        </div>
+                        <div class="temp-badge">
+                            <i class="fa-solid fa-temperature-arrow-down" style="color: #3b82f6;"></i> Low: <span id="tempLow">18°C</span>
+                        </div>
+                        <p class="feels-like-text">Feels like <span id="feelsLike">25°C</span></p>
                     </div>
                 </div>
             </div>
 
-            <!-- Air Quality Section -->
-            <div class="weather-card p-8 mb-8">
-                <h3 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
-                    <i class="fas fa-lungs text-blue-500 mr-2"></i>Air Quality
+            <!-- 24-Hour Timeline Hourly Forecast -->
+            <div class="dashboard-card">
+                <h3 class="card-title">
+                    <i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> 24-Hour Forecast Timeline
                 </h3>
-                <div id="airQuality" class="grid grid-cols-2 md:grid-cols-3 gap-6">
-                    <!-- Air quality data will be inserted here -->
+                <div id="hourlyForecast" class="hourly-timeline">
+                    <!-- Hourly forecast cards inserted dynamically -->
                 </div>
             </div>
 
-            <!-- 5-Day Forecast -->
-            <div class="weather-card p-8">
-                <h3 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
-                    <i class="fas fa-calendar-days text-blue-500 mr-2"></i>5-Day Forecast
-                </h3>
-                <div id="forecast" class="grid grid-cols-2 md:grid-cols-5 gap-6">
-                    <!-- Forecast data will be inserted here -->
+            <!-- Detailed Weather Metrics Grid -->
+            <div class="metrics-grid">
+                
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: rgba(99, 102, 241, 0.15); color: #818cf8;">
+                        <i class="fa-solid fa-droplet"></i>
+                    </div>
+                    <div>
+                        <span class="metric-label">Humidity</span>
+                        <h4 id="humidity" class="metric-value">65%</h4>
+                    </div>
                 </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
+                        <i class="fa-solid fa-wind"></i>
+                    </div>
+                    <div>
+                        <span class="metric-label">Wind Speed</span>
+                        <h4 id="windSpeed" class="metric-value">12 km/h</h4>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24;">
+                        <i class="fa-solid fa-gauge-high"></i>
+                    </div>
+                    <div>
+                        <span class="metric-label">Air Pressure</span>
+                        <h4 id="pressure" class="metric-value">1013 hPa</h4>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: rgba(236, 72, 153, 0.15); color: #f472b6;">
+                        <i class="fa-solid fa-sun"></i>
+                    </div>
+                    <div>
+                        <span class="metric-label">UV Index</span>
+                        <h4 id="uvIndex" class="metric-value">4 (Moderate)</h4>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8;">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                    <div>
+                        <span class="metric-label">Visibility</span>
+                        <h4 id="visibility" class="metric-value">10 km</h4>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: rgba(168, 85, 247, 0.15); color: #c084fc;">
+                        <i class="fa-solid fa-compass"></i>
+                    </div>
+                    <div>
+                        <span class="metric-label">Wind Direction</span>
+                        <h4 id="windDirection" class="metric-value">NE (45°)</h4>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Two-Column Grid: Air Quality & 5-Day Forecast -->
+            <div class="two-column-grid">
+                
+                <!-- Air Quality Card -->
+                <div class="dashboard-card">
+                    <h3 class="card-title">
+                        <i class="fa-solid fa-lungs" style="color: var(--accent);"></i> Air Quality & Health Index
+                    </h3>
+                    <div id="airQualityBox">
+                        <!-- AQI Badge and Pollutants Grid -->
+                    </div>
+                </div>
+
+                <!-- 5-Day Extended Forecast Card -->
+                <div class="dashboard-card">
+                    <h3 class="card-title">
+                        <i class="fa-solid fa-calendar-days" style="color: #f59e0b;"></i> 5-Day Extended Forecast
+                    </h3>
+                    <div id="forecast" class="forecast-grid">
+                        <!-- 5-Day forecast cards inserted dynamically -->
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+    </main>
+
+    <!-- API Key Settings Modal -->
+    <div class="modal-overlay" id="apiModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fa-solid fa-key" style="color: var(--primary);"></i> Weather Engine Settings</h3>
+                <button class="close-modal-btn" onclick="closeApiModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <label class="control-label" style="margin-bottom: 6px; display: block;">Default Data Source</label>
+                <select id="engineSelect" class="select-field">
+                    <option value="openmeteo">Open-Meteo Free API (Zero Key Required - Recommended)</option>
+                    <option value="openweathermap">OpenWeatherMap API (Requires API Key)</option>
+                </select>
+            </div>
+
+            <div id="owmKeyBox">
+                <label class="control-label" style="margin-bottom: 6px; display: block;">OpenWeatherMap API Key</label>
+                <input type="text" id="apiKeyInput" class="input-field" placeholder="Paste your OpenWeatherMap API Key...">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
+                <button class="btn-secondary" onclick="closeApiModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveApiSettings()">Save Settings</button>
             </div>
         </div>
     </div>
 
-    <!-- Theme Toggle -->
-    <button id="themeToggle" 
-            class="fixed bottom-6 right-6 p-4 rounded-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
-        <i class="fas fa-moon dark:hidden text-xl"></i>
-        <i class="fas fa-sun hidden dark:block text-xl"></i>
-    </button>
+    <!-- Notification Toast -->
+    <div class="toast" id="toast">
+        <i class="fa-solid fa-circle-check" id="toastIcon" style="color: var(--accent); font-size: 1.2rem;"></i>
+        <span id="toastMsg">Action completed successfully!</span>
+    </div>
 
-    <!-- Copyright -->
-    <footer class="fixed bottom-0 left-0 w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm py-2 text-center text-sm text-gray-600 dark:text-gray-300">
-        <p>&copy; 2025 Weather App by Omkar Bhandalkar. All rights reserved.</p>
+    <!-- Footer -->
+    <footer>
+        <p>SkyPulse Pro Weather Studio &copy; 2026. Built by Omkar Bhandalkar.</p>
     </footer>
 
+    <!-- App Script -->
     <script src="script.js"></script>
 </body>
 </html>
