@@ -4,7 +4,7 @@
 
 ---
 
-## ✨ Key Features :
+## ✨ Key Feature :
 
 - 🌤️ **Dual Weather Engine Support**
   - **Open-Meteo API**: Works out-of-the-box with zero API key configuration required!
