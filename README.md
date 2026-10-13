@@ -1,6 +1,6 @@
 # ☀️ SkyPulse Pro - Live Weather Dashboard & Forecast Studio
 
-> **Real-time global weather dashboard with 24-hour hourly timelines, 5-day extended forecasts, Air Quality Index (AQI), dual-engine API fallback, and animated particle backdrops.**
+> **Real-time global weather dashboard with 24-hour hourly timelines, 5-day extended forecasts, Air Quality Index (AQI), dual-engine API fallback, and animated particle backdrops by omkar bhandalkar.**
 
 ---
 
